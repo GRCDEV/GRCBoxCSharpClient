@@ -1,0 +1,5 @@
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\GRCBoxCSharp\obj\Debug\GRCBoxCSharp.csprojResolveAssemblyReference.cache
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\GRCBoxCSharp\bin\Debug\GRCBoxCSharp.dll
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\GRCBoxCSharp\bin\Debug\GRCBoxCSharp.pdb
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\GRCBoxCSharp\obj\Debug\GRCBoxCSharp.dll
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\GRCBoxCSharp\obj\Debug\GRCBoxCSharp.pdb

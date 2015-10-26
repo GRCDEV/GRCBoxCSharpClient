@@ -1,0 +1,10 @@
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\TestGRCBox\bin\Debug\TestGRCBox.exe.config
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\TestGRCBox\bin\Debug\TestGRCBox.exe
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\TestGRCBox\bin\Debug\TestGRCBox.pdb
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\TestGRCBox\bin\Debug\GRCBoxCSharp.dll
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\TestGRCBox\bin\Debug\GRCBoxCSharp.pdb
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\TestGRCBox\obj\Debug\TestGRCBox.csprojResolveAssemblyReference.cache
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\TestGRCBox\obj\Debug\TestGRCBox.exe
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\TestGRCBox\obj\Debug\TestGRCBox.pdb
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\TestGRCBox\bin\Debug\Newtonsoft.Json.dll
+C:\Users\NetGNA\Documents\GitHub\GRCBoxCSharp\TestGRCBox\bin\Debug\Newtonsoft.Json.xml
