@@ -10,6 +10,7 @@ namespace GrcBoxCSharp
     [DataContract]
     public class GrcBoxRuleList
     {
+        [DataMember]
         List<GrcBoxRule> list { get; set; }
     }
 }

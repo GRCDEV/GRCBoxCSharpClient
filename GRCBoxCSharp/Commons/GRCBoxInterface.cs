@@ -21,54 +21,25 @@ namespace GrcBoxCSharp
             UNKNOWN
         };
 
-        String name
-        {
-            get;
-        }
-
-        String address
-        {
-            get;
-        }
-
-        Type type
-        {
-            get;
-        }
-
-        String connection
-        {
-            get;
-        }
-
-        double cost
-        {
-            get;
-        }
-
-        double rate
-        {
-            get;
-        }
-
-        bool isUp
-        {
-            get;
-        }
-
-        bool isMulticast
-        {
-            get;
-        }
-
-        bool hasInternet
-        {
-            get;
-        }
-
-        bool isDefault
-        {
-            get;
-        }
+        [DataMember]
+        String name { get; set; }
+        [DataMember]
+        String address{ get; set; }
+        [DataMember]
+        Type type{ get; set; }
+        [DataMember]
+        String connection { get; set; }
+        [DataMember]
+        double cost{ get; set; }
+        [DataMember]
+        double rate{ get; set; }
+        [DataMember]
+        bool isUp{ get; set; }
+        [DataMember]
+        bool isMulticast{ get; set; }
+        [DataMember]
+        bool hasInternet{ get; set; }
+        [DataMember]
+        bool isDefault{ get; set; }
     }
 }

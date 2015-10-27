@@ -7,6 +7,7 @@ namespace GrcBoxCSharp
     [DataContract]
     public class GrcBoxInterfaceList
     {
+        [DataMember]
         List<GrcBoxInterface> ifaces { get; set; }
     }
 }
