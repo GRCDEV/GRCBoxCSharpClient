@@ -22,24 +22,24 @@ namespace GrcBoxCSharp
         };
 
         [DataMember]
-        String name { get; set; }
+        public string name { get; set; }
         [DataMember]
-        String address{ get; set; }
+        public string address{ get; set; }
         [DataMember]
-        Type type{ get; set; }
+        public Type type{ get; set; }
         [DataMember]
-        String connection { get; set; }
+        public string connection { get; set; }
         [DataMember]
-        double cost{ get; set; }
+        public double cost{ get; set; }
         [DataMember]
-        double rate{ get; set; }
+        public double rate{ get; set; }
         [DataMember]
-        bool isUp{ get; set; }
+        public bool isUp{ get; set; }
         [DataMember]
-        bool isMulticast{ get; set; }
+        public bool isMulticast{ get; set; }
         [DataMember]
-        bool hasInternet{ get; set; }
+        public bool hasInternet{ get; set; }
         [DataMember]
-        bool isDefault{ get; set; }
+        public bool isDefault{ get; set; }
     }
 }

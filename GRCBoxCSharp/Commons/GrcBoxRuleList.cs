@@ -11,6 +11,6 @@ namespace GrcBoxCSharp
     public class GrcBoxRuleList
     {
         [DataMember]
-        List<GrcBoxRule> list { get; set; }
+        public List<GrcBoxRule> list { get; set; }
     }
 }

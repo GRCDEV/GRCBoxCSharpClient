@@ -7,10 +7,10 @@ namespace GrcBoxCSharp
     public class GrcBoxAppInfo
     {
         [DataMember]
-        int appId { get; set; }
+        public int appId { get; set; }
         [DataMember]
-        String name { get; set; }
+        public string name { get; set; }
         [DataMember]
-        long keepAlivePeriod { get; set;}
+        public long keepAlivePeriod { get; set;}
     }
 }

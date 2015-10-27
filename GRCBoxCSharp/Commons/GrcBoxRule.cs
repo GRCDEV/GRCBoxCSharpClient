@@ -22,30 +22,30 @@ namespace GrcBoxCSharp
             MULTICAST
         }
         [DataMember]
-        int id { get; set; }
+        public int id { get; set; }
         [DataMember]
-        Protocol protocol { get; set; }
+        public Protocol protocol { get; set; }
         [DataMember]
-        RuleType type { get; set; }
+        public RuleType type { get; set; }
         [DataMember]
-        int appid { get; set; }
+        public int appid { get; set; }
         [DataMember]
-        String ifName { get; set; }
+        public string ifName { get; set; }
         [DataMember]
-        long expireDate { get; set; }
+        public long expireDate { get; set; }
         [DataMember]
-        int srcPort { get; set; }
+        public int srcPort { get; set; }
         [DataMember]
-        int dstPort { get; set; }
+        public int dstPort { get; set; }
         [DataMember]
-        String srcAddr { get; set; }
+        public string srcAddr { get; set; }
         [DataMember]
-        String dstAddr { get; set; }
+        public string dstAddr { get; set; }
         [DataMember]
-        String mcastPlugin { get; set; }
+        public string mcastPlugin { get; set; }
         [DataMember]
-        int dstFwdPort { get; set; }
+        public int dstFwdPort { get; set; }
         [DataMember]
-        String dstFwdAddr { get; set; }
+        public string dstFwdAddr { get; set; }
     }
 }

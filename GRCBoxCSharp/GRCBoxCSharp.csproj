@@ -47,12 +47,10 @@
     <Compile Include="Commons\GrcBoxRule.cs" />
     <Compile Include="Commons\GrcBoxRuleList.cs" />
     <Compile Include="Commons\GrcBoxStatus.cs" />
+    <Compile Include="Commons\IdSecret.cs" />
     <Compile Include="Commons\StringList.cs" />
     <Compile Include="GRCBoxClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
