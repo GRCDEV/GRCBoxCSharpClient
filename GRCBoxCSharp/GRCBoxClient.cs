@@ -177,7 +177,6 @@ namespace GrcBoxCSharp
             stream.Position = 0;
             StreamReader r = new StreamReader(stream);
             string content = r.ReadToEnd();
-            Console.WriteLine("New Rule JSON:"+content);
             GrcBoxRuleList list = makePostRequest<GrcBoxRuleList>(uri, content, appId.ToString(), mPass);
             return list.list[list.list.Count - 1];
         }
