@@ -8,6 +8,6 @@ namespace GrcBoxCSharp
     public class GrcBoxInterfaceList
     {
         [DataMember]
-        public List<GrcBoxInterface> ifaces { get; set; }
+        public List<GrcBoxInterface> list { get; set; }
     }
 }

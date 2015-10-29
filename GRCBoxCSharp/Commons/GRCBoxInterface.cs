@@ -26,7 +26,7 @@ namespace GrcBoxCSharp
         [DataMember]
         public string address{ get; set; }
         [DataMember]
-        public Type type{ get; set; }
+        public string type{ get; set; }
         [DataMember]
         public string connection { get; set; }
         [DataMember]
@@ -34,12 +34,12 @@ namespace GrcBoxCSharp
         [DataMember]
         public double rate{ get; set; }
         [DataMember]
-        public bool isUp{ get; set; }
+        public bool up{ get; set; }
         [DataMember]
-        public bool isMulticast{ get; set; }
+        public bool multicast{ get; set; }
         [DataMember]
         public bool hasInternet{ get; set; }
-        [DataMember]
+        [DataMember( Name = "default") ]
         public bool isDefault{ get; set; }
     }
 }

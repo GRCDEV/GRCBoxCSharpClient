@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
+
 
 namespace GrcBoxCSharp
 {
@@ -21,12 +17,15 @@ namespace GrcBoxCSharp
             OUTGOING,
             MULTICAST
         }
+
+        [DataMember(Name = "@class")]
+        public string javaclass { get; set; } = "es.upv.grc.grcbox.common.GrcBoxRule";
         [DataMember]
         public int id { get; set; }
         [DataMember]
-        public Protocol protocol { get; set; }
+        public string proto { get; set; }
         [DataMember]
-        public RuleType type { get; set; }
+        public string type { get; set; }
         [DataMember]
         public int appid { get; set; }
         [DataMember]
@@ -47,5 +46,23 @@ namespace GrcBoxCSharp
         public int dstFwdPort { get; set; }
         [DataMember]
         public string dstFwdAddr { get; set; }
+
+        public GrcBoxRule(int id, string protocol, string t, int appId, string ifName, long expireDate, int srcPort,
+            int dstPort, string srcAddr, string dstAddr, string mcastPlugin, int dstFwdPort, string dstFwdAddr)
+        {
+            this.id = id;
+            this.proto = protocol;
+            this.type = t;
+            this.appid = appId;
+            this.ifName = ifName;
+            this.expireDate = expireDate;
+            this.srcPort = srcPort;
+            this.dstPort = dstPort;
+            this.srcAddr = srcAddr;
+            this.dstAddr = dstAddr;
+            this.mcastPlugin = mcastPlugin;
+            this.dstFwdPort = dstFwdPort;
+            this.dstFwdAddr = dstFwdAddr;
+        }
     }
 }

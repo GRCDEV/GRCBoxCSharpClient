@@ -1,7 +1,9 @@
 ﻿using GRCBoxCSharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
@@ -21,6 +23,10 @@ namespace GrcBoxCSharp
         /// The name of the app
         /// </summary>
         private string appName;
+        /// <summary>
+        /// The network interface to connect with the GRCBox
+        /// </summary>
+        private NetworkInterface mIface;
         /// <summary>
         /// The base uri of the GRCBox
         /// </summary>
@@ -46,10 +52,11 @@ namespace GrcBoxCSharp
         /// Create a new GRCBoxClient instance with APP name "name"
         /// </summary>
         /// <param name="name"></param>
-        public GRCBoxClient(string name, string baseUri)
+        public GRCBoxClient(string name, string baseUri, NetworkInterface iface)
         {
             this.appName = name;
             this.baseUri = baseUri;
+            this.mIface = iface;
         }
 
         /// <summary>
@@ -74,7 +81,7 @@ namespace GrcBoxCSharp
             while (keepAliveBool)
             {
                 string uri = baseUri + APPS + "/" + appId;
-                makePostRequest<Object>(uri,"", appId.ToString(), mPass);
+                makePostRequest<Object>(uri, null, appId.ToString(), mPass);
                 try
                 {
                     Thread.Sleep((int)keepAliceInterval / 4);
@@ -110,7 +117,7 @@ namespace GrcBoxCSharp
         {
             string uri = baseUri + IFACES;
             GrcBoxInterfaceList list = makeGetRequest<GrcBoxInterfaceList>(uri);
-            return list.ifaces;
+            return list.list;
         }
 
         /// <summary>
@@ -119,7 +126,9 @@ namespace GrcBoxCSharp
         /// <returns></returns>
         public List<GrcBoxRule> getRules()
         {
-            
+            string uri = baseUri + APPS + "/" + appId + RULES;
+            GrcBoxRuleList list = makeGetRequest<GrcBoxRuleList>(uri);
+            return list.list;
         }
 
         /// <summary>
@@ -138,10 +147,39 @@ namespace GrcBoxCSharp
         /// </summary>
         /// <param name="rule">The rule to be registered, the field ID is ignored by the server</param>
         /// <returns>The actual rule registered in the server, with the new ID</returns>
-        public GrcBoxRule registerNewRule(GrcBoxRule rule)
+        public GrcBoxRule registerNewRule(GrcBoxRule.Protocol protocol, GrcBoxRule.RuleType t, GrcBoxInterface iface, long expireDate, int dstPort, 
+            int srcPort = -1, string mcastPlugin = null, int dstFwdPort = -1, string srcAddr = null, string dstAddr = null)
         {
-            //TODO
-            return null;
+            string ifName = iface.name;
+            string type = t.ToString();
+            string dstFwdAddr;
+            if ( GrcBoxRule.RuleType.INCOMING.Equals(t) )
+            {
+                dstAddr = iface.address;
+                dstFwdAddr = getMyIpAddr();
+                if(dstFwdPort == -1)
+                {
+                    dstFwdPort = dstPort;
+                }
+            }
+            else
+            {
+                srcAddr = getMyIpAddr();
+                dstFwdAddr = null;
+            }
+
+            GrcBoxRule rule = new GrcBoxRule(0, protocol.ToString(), type, appId, ifName, expireDate, srcPort,
+                dstPort, srcAddr, dstAddr, mcastPlugin, dstFwdPort, dstFwdAddr);
+            string uri = baseUri + APPS + "/" + appId + RULES;
+            MemoryStream stream = new MemoryStream();
+            DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(GrcBoxRule));
+            jsonSerializer.WriteObject(stream, rule);
+            stream.Position = 0;
+            StreamReader r = new StreamReader(stream);
+            string content = r.ReadToEnd();
+            Console.WriteLine("New Rule JSON:"+content);
+            GrcBoxRuleList list = makePostRequest<GrcBoxRuleList>(uri, content, appId.ToString(), mPass);
+            return list.list[list.list.Count - 1];
         }
 
         /// <summary>
@@ -150,7 +188,8 @@ namespace GrcBoxCSharp
         /// <param name="rule"></param>
         public void removeRule(GrcBoxRule rule)
         {
-            //TODO
+            string uri = baseUri + APPS + "/" + appId + RULES+"/"+rule.id;
+            makeDeleteRequest(uri, appId.ToString(), mPass);
         }
 
 
@@ -185,6 +224,18 @@ namespace GrcBoxCSharp
                 SetBasicAuthHeader(request, authName, authPass);
             }
 
+            if (content != null)
+            {
+                byte[] byteArray = Encoding.Default.GetBytes(content);
+                request.ContentLength = byteArray.Length;
+                request.ContentType = "application/json";
+                Stream dataStream = request.GetRequestStream();
+                dataStream.Write(byteArray, 0, byteArray.Length);
+                dataStream.Close();
+            }
+
+
+
             using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
             {
                 if (response.StatusCode == HttpStatusCode.NoContent)
@@ -199,6 +250,13 @@ namespace GrcBoxCSharp
                 DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(T));
                 return (T)jsonSerializer.ReadObject(response.GetResponseStream());
             }
+        }
+
+        private static byte[] GetBytesFromString(string str)
+        {
+            byte[] bytes = new byte[str.Length * sizeof(char)];
+            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+            return bytes;
         }
 
         private void makeDeleteRequest(string uri, string authName = null, string authPass = null)
@@ -230,6 +288,19 @@ namespace GrcBoxCSharp
             string authInfo = userName + ":" +userPassword;
             authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(authInfo));
             req.Headers["Authorization"] = "Basic " +authInfo;
+        }
+
+        private string getMyIpAddr()
+        {
+            string addr = null;
+            foreach( UnicastIPAddressInformation ipInfo in mIface.GetIPProperties().UnicastAddresses)
+            {
+                if(ipInfo.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    addr = ipInfo.Address.ToString();
+                }
+            }
+            return addr;
         }
     }
 }
