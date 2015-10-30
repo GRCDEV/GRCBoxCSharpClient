@@ -41,5 +41,13 @@ namespace GrcBoxCSharp
         public bool hasInternet{ get; set; }
         [DataMember( Name = "default") ]
         public bool isDefault{ get; set; }
+
+
+        public override string ToString()
+        {
+            return String.Format("GRCBox Interface: Name = \"{0}\", Type = \"{1}\", Addr = \"{2}\", HasInternet = \"{3}\","+
+                "Multicast = \"{4}\","
+                , name, type, address, hasInternet, multicast);
+        }
     }
 }
