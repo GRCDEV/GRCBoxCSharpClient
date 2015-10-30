@@ -42,6 +42,13 @@ namespace GrcBoxCSharp
         /// A boolean field to 
         /// </summary>
         private bool isRegistered;
+        public bool IsRegistered
+        {
+            get
+            {
+                return isRegistered;
+            }
+        }
 
         Thread keepAliveThread;
         long keepAliceInterval;
