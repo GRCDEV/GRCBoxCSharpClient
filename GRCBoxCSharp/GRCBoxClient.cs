@@ -15,7 +15,7 @@ namespace GrcBoxCSharp
         private readonly string IFACES = "/ifaces";
         private readonly string APPS = "/apps";
         private readonly string RULES = "/rules";
-
+        private readonly int MAX_TRIES = 4;
         private readonly string KEEPALIVETHREAD = "Keep Alive Thread";
 
         /// <summary>
@@ -50,9 +50,8 @@ namespace GrcBoxCSharp
             }
         }
 
-        Thread keepAliveThread;
-        long keepAliceInterval;
-        bool keepAliveBool = false;
+
+        long keepAliveInterval;
 
         /// <summary>
         /// Create a new GRCBoxClient instance with APP name "name"
@@ -74,32 +73,20 @@ namespace GrcBoxCSharp
             IdSecret secret = makePostRequest<IdSecret>(uri, appName);
             appId = secret.appId;
             mPass = secret.secret.ToString();
-            keepAliceInterval = secret.updatePeriod;
-            keepAliveThread = new Thread(new ThreadStart(keepAlive));
-            keepAliveThread.Name = KEEPALIVETHREAD;
+            keepAliveInterval = secret.updatePeriod;
+            informRegistered(keepAliveInterval);
             isRegistered = true;
-            keepAliveBool = true;
-            keepAliveThread.Start();
         }
 
+        
+
+        /// <summary>
+        /// Send a keep alive to the server
+        /// </summary>
         public void keepAlive()
         {
-            while (keepAliveBool)
-            {
-                string uri = baseUri + APPS + "/" + appId;
-                makePostRequest<Object>(uri, null, appId.ToString(), mPass);
-                try
-                {
-                    Thread.Sleep((int)keepAliceInterval / 4);
-                }
-                catch(ThreadInterruptedException e)
-                {
-                    if (!keepAliveBool)
-                    {
-                        return;
-                    }
-                }
-            }
+            string uri = baseUri + APPS + "/" + appId;
+            makePostRequest<Object>(uri, null, appId.ToString(), mPass);
         }
 
         /// <summary>
@@ -109,10 +96,9 @@ namespace GrcBoxCSharp
         public void deregister()
         {
             string uri = baseUri + APPS + "/" + appId;
-            makeDeleteRequest(uri, appId.ToString(), mPass);
-            keepAliveBool = false;
             isRegistered = false;
-            keepAliveThread.Interrupt();
+            makeDeleteRequest(uri, appId.ToString(), mPass);
+            informDeregistered();
         }
 
         /// <summary>
@@ -153,17 +139,17 @@ namespace GrcBoxCSharp
         /// </summary>
         /// <param name="rule">The rule to be registered, the field ID is ignored by the server</param>
         /// <returns>The actual rule registered in the server, with the new ID</returns>
-        public GrcBoxRule registerNewRule(GrcBoxRule.Protocol protocol, GrcBoxRule.RuleType t, GrcBoxInterface iface, long expireDate, int dstPort, 
-            int srcPort = -1, string mcastPlugin = null, int dstFwdPort = -1, string srcAddr = null, string dstAddr = null)
+        public GrcBoxRule registerNewRule(GrcBoxRule.Protocol protocol, GrcBoxRule.RuleType t, GrcBoxInterface iface, long expireDate, int dstPort, string dstAddr = null,
+            int srcPort = -1, string mcastPlugin = null, int dstFwdPort = -1, string srcAddr = null)
         {
             string ifName = iface.name;
             string type = t.ToString();
             string dstFwdAddr;
-            if ( GrcBoxRule.RuleType.INCOMING.Equals(t) )
+            if (GrcBoxRule.RuleType.INCOMING.Equals(t))
             {
                 dstAddr = iface.address;
                 dstFwdAddr = getMyIpAddr();
-                if(dstFwdPort == -1)
+                if (dstFwdPort == -1)
                 {
                     dstFwdPort = dstPort;
                 }
@@ -193,7 +179,7 @@ namespace GrcBoxCSharp
         /// <param name="rule"></param>
         public void removeRule(GrcBoxRule rule)
         {
-            string uri = baseUri + APPS + "/" + appId + RULES+"/"+rule.id;
+            string uri = baseUri + APPS + "/" + appId + RULES + "/" + rule.id;
             makeDeleteRequest(uri, appId.ToString(), mPass);
         }
 
@@ -201,7 +187,7 @@ namespace GrcBoxCSharp
         private T makeGetRequest<T>(string uri, string authName = null, string authPass = null)
         {
             HttpWebRequest request = WebRequest.Create(uri) as HttpWebRequest;
-
+            request.Timeout = 1000;
             if (authName != null && authPass != null)
             {
                 SetBasicAuthHeader(request, authName, authPass);
@@ -216,14 +202,14 @@ namespace GrcBoxCSharp
                     response.StatusDescription));
                 DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(T));
                 return (T)jsonSerializer.ReadObject(response.GetResponseStream());
-            }            
+            }
         }
 
         private T makePostRequest<T>(string uri, string content, string authName = null, string authPass = null)
         {
             HttpWebRequest request = WebRequest.Create(uri) as HttpWebRequest;
             request.Method = "POST";
-
+            request.Timeout = 500;
             if (authName != null && authPass != null)
             {
                 SetBasicAuthHeader(request, authName, authPass);
@@ -247,7 +233,7 @@ namespace GrcBoxCSharp
                 {
                     return default(T);
                 }
-                else if ( ! (response.StatusCode == HttpStatusCode.OK) )
+                else if (!(response.StatusCode == HttpStatusCode.OK))
                     throw new Exception(String.Format(
                     "Server error (HTTP {0}: {1}).",
                     response.StatusCode,
@@ -268,7 +254,7 @@ namespace GrcBoxCSharp
         {
             HttpWebRequest request = WebRequest.Create(uri) as HttpWebRequest;
             request.Method = "DELETE";
-
+            request.Timeout = 1000;
             if (authName != null && authPass != null)
             {
                 SetBasicAuthHeader(request, authName, authPass);
@@ -290,22 +276,66 @@ namespace GrcBoxCSharp
 
         public void SetBasicAuthHeader(WebRequest req, String userName, String userPassword)
         {
-            string authInfo = userName + ":" +userPassword;
+            string authInfo = userName + ":" + userPassword;
             authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(authInfo));
-            req.Headers["Authorization"] = "Basic " +authInfo;
+            req.Headers["Authorization"] = "Basic " + authInfo;
         }
 
         private string getMyIpAddr()
         {
             string addr = null;
-            foreach( UnicastIPAddressInformation ipInfo in mIface.GetIPProperties().UnicastAddresses)
+            foreach (UnicastIPAddressInformation ipInfo in mIface.GetIPProperties().UnicastAddresses)
             {
-                if(ipInfo.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                if (ipInfo.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                 {
                     addr = ipInfo.Address.ToString();
                 }
             }
             return addr;
         }
+
+        #region monitor
+
+        private List<GrcBoxMonitor> subscribers = new List<GrcBoxMonitor>();
+
+        public void subscribe(GrcBoxMonitor subs)
+        {
+            if(!subscribers.Contains(subs))
+            {
+                subscribers.Add(subs);
+            }
+        }
+
+        public void unsubscribe(GrcBoxMonitor subs)
+        {
+            if (subscribers.Contains(subs))
+            {
+                subscribers.Remove(subs);
+            }
+        }
+
+        private void informRegistered(long keepAliveInterval)
+        {
+            foreach(GrcBoxMonitor gm in subscribers)
+            {
+                gm.onRegistered(keepAliveInterval);
+            }
+        }
+
+        private void informDeregistered()
+        {
+            foreach (GrcBoxMonitor gm in subscribers)
+            {
+                gm.onDeregistered();
+            }
+        }
+
+
+        public interface GrcBoxMonitor
+        {
+            void onRegistered(long keepAliverInterval);
+            void onDeregistered();
+        }
+        #endregion
     }
 }

@@ -45,9 +45,8 @@ namespace GrcBoxCSharp
 
         public override string ToString()
         {
-            return String.Format("GRCBox Interface: Name = \"{0}\", Type = \"{1}\", Addr = \"{2}\", HasInternet = \"{3}\","+
-                "Multicast = \"{4}\","
-                , name, type, address, hasInternet, multicast);
+            return String.Format("GRCBoxIface:N=\"{0}\",T=\"{1}\",A=\"{2}\",Inet=\"{3}\","+
+                "M=\"{4}\"", name, type, address, hasInternet, multicast);
         }
     }
 }
